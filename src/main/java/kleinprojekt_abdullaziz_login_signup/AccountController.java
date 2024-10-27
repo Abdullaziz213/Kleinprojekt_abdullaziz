@@ -47,14 +47,14 @@ public class AccountController {
  
     @FXML
     private void initialize() throws Exception {
-        // create and init DB-Tables
+        // Account-Objekt erstellen und Datenbanktabellen initialisieren
         account = new Account();
-        //account.initAccount();
+        account.initAccount();
     }   
 
     @FXML
-    private void onSignUp(ActionEvent event) throws Exception  {
-        // verify name, password and confirmed password
+    private void onSignUp(ActionEvent event) throws Exception {
+        // Benutzername, Passwort und bestätigtes Passwort prüfen
         String name = tfSignUpEmail.getText();
         if (name.isEmpty()) {
             lbSignUpMessage.setText("Type in email");
@@ -62,7 +62,7 @@ public class AccountController {
         }
 
         String pw = pfSignUpPassword.getText().trim();
-        if (pw.equals("")) {
+        if (pw.isEmpty()) {
             lbSignUpMessage.setText("Enter a plausible password");
             return;
         }
@@ -72,23 +72,23 @@ public class AccountController {
             return;
         }
 
-        // verify account 
+        // Verifizierung des Accounts
         if (account.verifyAccount(name)) {
             lbSignUpMessage.setText("Email " + name + " has already an account");
             return;
         }
         
-        // add new account
+        // Neuen Account hinzufügen
         account.addAccount(name, pw);
         
-        // select tab 'Log In'
+        // Tab "Log In" auswählen
         tabPane.getTabs().get(0).setDisable(true);
         
-        // reset login and signup
+        // Login- und Signup-Felder zurücksetzen
         resetLogin();
         resetSignup();
         
-        // select tab 'Log in'
+        // Tab "Log in" auswählen
         tabPane.getSelectionModel().select(1);
     }
 
@@ -110,12 +110,12 @@ public class AccountController {
    
     @FXML
     private void onLogout(ActionEvent event) {
-        // set tabs
+        // Tabs zurücksetzen
         tabPane.getTabs().get(0).setDisable(false);
         tabPane.getTabs().get(1).setDisable(false);
         tabPane.getTabs().get(2).setDisable(true);
         
-        // reset login and select tab 'Log in'
+        // Login zurücksetzen und Tab "Log in" auswählen
         resetLogin();   
         tabPane.getSelectionModel().select(1);      
     }
