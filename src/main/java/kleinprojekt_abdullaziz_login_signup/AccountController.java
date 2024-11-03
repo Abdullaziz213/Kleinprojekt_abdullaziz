@@ -67,6 +67,12 @@ public class AccountController {
             return;
         }
 
+        // Überprüfen, ob das Passwort stark genug ist
+        if (!account.isPasswordStrong(pw)) {
+            lbSignUpMessage.setText("Password must be at least 8 characters, contain a number and a special character.");
+            return;
+        }
+
         if (!pw.equals(pfSignUpConfirmPassword.getText())) {
             lbSignUpMessage.setText("Password and confirmed password are not identical");
             return;
@@ -103,8 +109,13 @@ public class AccountController {
             tabPane.getTabs().get(2).setDisable(false);
             tabPane.getSelectionModel().select(2);
         } else {
-            lbLoginMessage.setText("'Email' or 'Password' are wrong");
-            tabPane.getTabs().get(0).setDisable(false);
+            // Zeigt eine gesperrte Meldung an, falls das Konto gesperrt ist
+            String attempts = account.getValue("User", "username", "'" + name + "'", "login_attempts");
+            if (attempts != null && Integer.parseInt(attempts) >= 3) {
+                lbLoginMessage.setText("Account ist gesperrt. Bitte wenden Sie sich an den Support.");
+            } else {
+                lbLoginMessage.setText("'Email' or 'Password' are wrong");
+            }
         }
     }
    
