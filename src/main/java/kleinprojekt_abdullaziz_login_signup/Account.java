@@ -76,39 +76,6 @@
          return isKeyAvailable("User", "username", "'" + userName + "'");
      }
 
-     // Erhöht die Anzahl der Login-Versuche für einen Benutzer
-     private void incrementLoginAttempts(String userName) {
-        String userId = getValue("User", "username", "'" + userName + "'", "user_id");
-        if (userId != null) {
-            // Aktuelle Anzahl der Login-Versuche abrufen
-            String currentAttempts = getValue("User", "user_id", userId, "login_attempts");
-            int attempts = currentAttempts != null ? Integer.parseInt(currentAttempts) : 0;
-            
-            // Anzahl der Login-Versuche um 1 erhöhen
-            attempts++;
-            
-            // Aktualisieren der Anzahl der Login-Versuche in der Datenbank
-            insert("User", "login_attempts", Integer.toString(attempts));
-            System.out.println("Login attempts for user " + userName + " incremented to " + attempts);
-        }
-    }
-
-    // Setzt die Anzahl der Login-Versuche für einen Benutzer zurück
-    private void resetLoginAttempts(String userName) {
-        String userId = getValue("User", "username", "'" + userName + "'", "user_id");
-        if (userId != null) {
-            // Zurücksetzen der Anzahl der Login-Versuche auf 0
-            insert("User", "login_attempts", "0");
-            System.out.println("Login attempts for user " + userName + " reset to 0");
-        }
-    }
-
-    // Holt die Anzahl der Login-Versuche für einen Benutzer
-    public int getLoginAttempts(String userName) {
-        String attempts = getValue("User", "username", "'" + userName + "'", "login_attempts");
-        return attempts != null ? Integer.parseInt(attempts) : 0;
-    }
-
      public boolean isPasswordStrong(String password) {
         // Prüft die Länge, ob eine Zahl und ein Sonderzeichen enthalten sind
         if (password.length() < 8) {
@@ -132,14 +99,6 @@
     // Salt, gespeicherten Hash und aktuelle Login-Versuche abrufen
     String salt = getValue("Salt", "user_id", userId, "salt");
     String storedHash = getValue("Password_Hashes", "user_id", userId, "password_hash");
-    String currentAttempts = getValue("User", "user_id", userId, "login_attempts");
-    int attempts = currentAttempts != null ? Integer.parseInt(currentAttempts) : 0;
-
-    // Wenn der Benutzer gesperrt ist, Login blockieren
-    if (attempts >= 3) {
-        System.out.println("Account ist gesperrt.");
-        return false;
-    }
 
     // Passwort-Hash mit Salt und Pepper generieren und überprüfen
     try {
@@ -147,20 +106,13 @@
         md.update((salt + password + pepper).getBytes());
         String calculatedHash = Base64.getEncoder().encodeToString(md.digest());
 
-        if (storedHash != null && storedHash.equals(calculatedHash)) {
-            // Passwort korrekt -> Login-Versuche zurücksetzen
-            resetLoginAttempts(userName);
-            return true;
-        } else {
-            // Wenn das Passwort falsch ist, erhöhen wir die Login-Versuche
-            incrementLoginAttempts(userName);
+        
+
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println("Fehler beim Hashen des Passworts: " + e.getMessage());
             return false;
         }
-
-    } catch (NoSuchAlgorithmException e) {
-        System.out.println("Fehler beim Hashen des Passworts: " + e.getMessage());
-        return false;
-    }
+            return false;
      }
  
      // Generiert einen zufälligen Salt

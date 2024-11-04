@@ -109,13 +109,8 @@ public class AccountController {
             tabPane.getTabs().get(2).setDisable(false);
             tabPane.getSelectionModel().select(2);
         } else {
-            // Zeigt eine gesperrte Meldung an, falls das Konto gesperrt ist
-            String attempts = account.getValue("User", "username", "'" + name + "'", "login_attempts");
-            if (attempts != null && Integer.parseInt(attempts) >= 3) {
-                lbLoginMessage.setText("Account ist gesperrt. Bitte wenden Sie sich an den Support.");
-            } else {
-                lbLoginMessage.setText("'Email' or 'Password' are wrong");
-            }
+            lbLoginMessage.setText("'Email' or 'Password' are wrong");
+            tabPane.getTabs().get(0).setDisable(false);
         }
     }
    
